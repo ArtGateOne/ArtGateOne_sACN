@@ -29,6 +29,8 @@ IPAddress subnet(255, 0, 0, 0);                       // SUBNET
 unsigned int localPortSACN = 5568;  // Port dla danych sACN
 unsigned int sACN_Universe = 1;  // Nr Universe dla odbioru sACN 1-63999
 
+unsigned int i = 0;
+
 EthernetUDP UdpSACN;
 
 void setup() {
@@ -63,20 +65,15 @@ void receiveSACN(EthernetUDP &udp) {
   int packetSizeSACN = udp.parsePacket();
   if (packetSizeSACN > 0) {
 
-    udp.read(packetBuffer, 1);
-    int startCode = packetBuffer[0];
-
-    if (startCode == 0x00) {//check start code
-
-      for (unsigned int i = 1; i < 126; i++) {//read udp buffer 1-126
+      for (i = 0; i < 126; i++) {//read udp buffer 1-126
         udp.read(packetBuffer, 1);
       }
 
-      for (unsigned int i = 0; i < LED_COUNT; i++) {//read udp buffer data an copy to WS LED strip buffer
+      for (i = 0; i < LED_COUNT; i++) {//read udp buffer data an copy to WS LED strip buffer
         udp.read(packetBuffer, 3);
         strip.setPixelColor(i, packetBuffer[0], packetBuffer[1], packetBuffer[2]);
       }
+      
       strip.show();//send data to WS LED
-    }
   }
 }
